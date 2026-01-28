@@ -73,11 +73,21 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .combo-button:hover {
   background-color: #1a1a1a;
+  transform: scale(1.02);
+}
+
+.combo-button:active {
+  transform: scale(0.98);
+}
+
+.combo-button.added {
+  background-color: #27ae60;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {

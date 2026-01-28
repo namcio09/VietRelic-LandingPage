@@ -7,6 +7,7 @@ import './ProductList.css';
 export default function ProductList() {
   const { addItem } = useCart();
   const [activeIndex, setActiveIndex] = useState(0);
+  const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
 
   const handleAddToCart = (product: typeof products[0]) => {
     addItem({
@@ -16,6 +17,15 @@ export default function ProductList() {
       image: product.image,
       type: 'product',
     });
+
+    setAddedIds((prev) => new Set(prev).add(product.id));
+    setTimeout(() => {
+      setAddedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(product.id);
+        return next;
+      });
+    }, 1500);
   };
 
   const goTo = useCallback(
@@ -55,25 +65,28 @@ export default function ProductList() {
           </button>
 
           <div className="product-stage">
-            {products.map((product, index) => (
-              <div key={product.id} className={getPositionClass(index)}>
-                <div className="product-card-inner">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="product-image"
-                  />
-                  <h3 className="product-name">{product.name}</h3>
-                  <p className="product-price">{formatCurrency(product.price)}</p>
-                  <button
-                    className="product-button"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    Đặt ngay
-                  </button>
+            {products.map((product, index) => {
+              const isAdded = addedIds.has(product.id);
+              return (
+                <div key={product.id} className={getPositionClass(index)}>
+                  <div className="product-card-inner">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="product-image"
+                    />
+                    <h3 className="product-name">{product.name}</h3>
+                    <p className="product-price">{formatCurrency(product.price)}</p>
+                    <button
+                      className={`product-button ${isAdded ? 'added' : ''}`}
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      {isAdded ? '✓ Đã thêm' : 'Thêm vào giỏ hàng'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <button
