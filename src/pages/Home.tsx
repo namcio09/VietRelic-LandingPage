@@ -6,6 +6,7 @@ import ProductList from '../components/ProductList';
 import ComboGrid from '../components/ComboGrid';
 import Footer from '../components/Footer';
 import Sidebar from '../components/Sidebar';
+import bgImage from '../assets/images/ai-gen.png';
 import './Home.css';
 
 export default function Home() {
@@ -27,8 +28,15 @@ export default function Home() {
     <div className="home">
       <Header />
       <Hero />
-      <ProductList />
-      <ComboGrid />
+      <div className="products-combo-wrapper">
+        <div
+          className="products-combo-bg"
+          style={{ backgroundImage: `url(${bgImage})` }}
+        ></div>
+        <div className="products-combo-overlay"></div>
+        <ProductList />
+        <ComboGrid />
+      </div>
       <Footer />
       <Sidebar />
     </div>

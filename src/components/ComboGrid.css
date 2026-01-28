@@ -1,6 +1,27 @@
 .combo-section {
-  background-color: #f5f5f0;
   padding: 4rem 0;
+  position: relative;
+  z-index: 2;
+}
+
+.combo-section .section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  text-align: center;
+}
+
+.combo-section .section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: #8b4513;
+  text-transform: uppercase;
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: 0.08em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .combo-grid {

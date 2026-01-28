@@ -3,3 +3,36 @@
   display: flex;
   flex-direction: column;
 }
+
+.products-combo-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.products-combo-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: 0;
+}
+
+.products-combo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(245, 245, 240, 0.75) 0%,
+    rgba(245, 245, 240, 0.65) 50%,
+    rgba(245, 245, 240, 0.75) 100%
+  );
+  z-index: 1;
+}
