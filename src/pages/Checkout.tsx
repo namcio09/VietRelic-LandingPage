@@ -212,6 +212,11 @@ export default function Checkout() {
             <div className="order-items">
               {items.map((item) => (
                 <div key={item.id} className="order-item">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="item-image"
+                  />
                   <div className="item-info">
                     <span className="item-name">{item.name}</span>
 

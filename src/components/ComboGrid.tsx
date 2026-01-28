@@ -11,16 +11,9 @@ export default function ComboGrid() {
       id: combo.id,
       name: combo.name,
       price: combo.price,
+      image: combo.image,
       type: 'combo',
     });
-  };
-
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} className={i < rating ? 'star filled' : 'star'}>
-        ★
-      </span>
-    ));
   };
 
   return (
@@ -35,16 +28,19 @@ export default function ComboGrid() {
                 alt={combo.name}
                 className="combo-image"
               />
-              <h3 className="combo-name">{combo.name}</h3>
-              <p className="combo-description">{combo.description}</p>
-              <div className="combo-rating">{renderStars(combo.rating)}</div>
-              <p className="combo-price">{formatCurrency(combo.price)}</p>
-              <button
-                className="combo-button"
-                onClick={() => handleAddToCart(combo)}
-              >
-                Đặt ngay
-              </button>
+              <div className="combo-content">
+                <h3 className="combo-name">{combo.name}</h3>
+                <p className="combo-description">{combo.description}</p>
+              </div>
+              <div className="combo-footer">
+                <p className="combo-price">{formatCurrency(combo.price)}</p>
+                <button
+                  className="combo-button"
+                  onClick={() => handleAddToCart(combo)}
+                >
+                  Đặt ngay
+                </button>
+              </div>
             </div>
           ))}
         </div>

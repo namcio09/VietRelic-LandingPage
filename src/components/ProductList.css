@@ -30,7 +30,7 @@
 .product-stage {
   position: relative;
   width: 100%;
-  height: 360px;
+  height: 420px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,6 +55,7 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   border: 2px solid rgba(0, 0, 0, 0.1);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
 }
 
 .product-card.center .product-card-inner {
@@ -117,7 +118,11 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: #2c2c2c;
-  flex-grow: 1;
+  min-height: 2.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .product-price {
@@ -125,6 +130,7 @@
   font-weight: bold;
   color: #e74c3c;
   margin-bottom: 1rem;
+  margin-top: auto;
 }
 
 .product-button {
@@ -144,7 +150,7 @@
 
 @media (max-width: 768px) {
   .product-stage {
-    height: 320px;
+    height: 380px;
   }
 
   .product-card {

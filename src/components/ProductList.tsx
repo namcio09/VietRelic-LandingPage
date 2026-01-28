@@ -13,6 +13,7 @@ export default function ProductList() {
       id: product.id,
       name: product.name,
       price: product.price,
+      image: product.image,
       type: 'product',
     });
   };

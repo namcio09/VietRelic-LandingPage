@@ -159,7 +159,8 @@
 
 .order-item {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
   padding: 1rem 0;
   border-bottom: 1px solid #eee;
 }
@@ -168,11 +169,20 @@
   border-bottom: none;
 }
 
+.item-image {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
 .item-info {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
+  min-width: 0;
 }
 
 .item-name {
