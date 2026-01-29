@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import './Header.css';
+import logoImg from '../assets/images/logo.png';
 
 export default function Header() {
   const { getTotalItems } = useCart();
@@ -10,7 +11,7 @@ export default function Header() {
     <header className="header">
       <div className="header-container">
         <Link to="/" className="header-logo">
-          VietRelic
+          <img src={logoImg} alt="VietRelic Logo" className="logo-image" />
         </Link>
         <nav className="header-nav">
           <Link to="/#products" className="nav-link">
@@ -22,8 +23,8 @@ export default function Header() {
         </nav>
         <Link to="/checkout" className="header-cart">
           <svg
-            width="24"
-            height="24"
+            width="38"
+            height="38"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"

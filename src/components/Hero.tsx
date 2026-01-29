@@ -72,23 +72,23 @@ export default function Hero() {
     <section className="hero">
       <div className="hero-container">
         <div className="hero-content">
-          <h1 key={`title-${activeIndex}`} className="hero-title">
+          <h1 key={`title-${activeIndex}`} className="hero-title hero-animate-1">
             {active.title}
           </h1>
           <p
             key={`desc-${activeIndex}`}
             ref={descriptionRef}
-            className={`hero-description ${isExpanded ? 'expanded' : ''}`}
+            className={`hero-description hero-animate-2 ${isExpanded ? 'expanded' : ''}`}
           >
             {active.description}
           </p>
           {showReadMore && (
-            <button className="hero-button" onClick={toggleExpand}>
+            <button className="hero-button hero-animate-3 btn-animated" onClick={toggleExpand}>
               {isExpanded ? 'Thu gọn' : 'Xem thêm'}
             </button>
           )}
         </div>
-        <div className="hero-images">
+        <div className="hero-images hero-animate-4">
           <div className="hero-main-image">
             <button
               type="button"

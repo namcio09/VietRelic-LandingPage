@@ -1,12 +1,72 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../lib/format';
+import { getAddressSuggestions } from '../data/vietnamLocations';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './Checkout.css';
 
 type Msg = { type: 'success' | 'error'; text: string } | null;
+
+interface FieldErrors {
+  fullName?: string;
+  phone?: string;
+  address?: string;
+}
+
+// Validate họ tên: ít nhất 2 từ, chỉ chứa chữ cái và khoảng trắng
+const validateFullName = (name: string): string | null => {
+  const trimmed = name.trim();
+  if (!trimmed) return 'Vui lòng nhập họ tên.';
+
+  // Kiểm tra chỉ chứa chữ cái (bao gồm tiếng Việt) và khoảng trắng
+  const nameRegex = /^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾưăạảấầẩẫậắằẳẵặẹẻẽềềểếỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵýỷỹ\s]+$/;
+  if (!nameRegex.test(trimmed)) {
+    return 'Họ tên chỉ được chứa chữ cái và khoảng trắng.';
+  }
+
+  // Kiểm tra ít nhất 2 từ
+  const words = trimmed.split(/\s+/).filter(w => w.length > 0);
+  if (words.length < 2) {
+    return 'Vui lòng nhập đầy đủ họ và tên (ít nhất 2 từ).';
+  }
+
+  // Kiểm tra độ dài tối thiểu mỗi từ
+  if (words.some(w => w.length < 2)) {
+    return 'Mỗi từ trong họ tên phải có ít nhất 2 ký tự.';
+  }
+
+  return null;
+};
+
+// Validate số điện thoại Việt Nam
+const validatePhone = (phone: string): string | null => {
+  const trimmed = phone.trim().replace(/\s+/g, '');
+  if (!trimmed) return 'Vui lòng nhập số điện thoại.';
+
+  // Số điện thoại Việt Nam: bắt đầu bằng 0, 10 số
+  // Các đầu số hợp lệ: 03, 05, 07, 08, 09
+  const phoneRegex = /^(03|05|07|08|09)[0-9]{8}$/;
+
+  if (!phoneRegex.test(trimmed)) {
+    return 'Số điện thoại không hợp lệ.';
+  }
+
+  return null;
+};
+
+// Validate địa chỉ
+const validateAddress = (address: string): string | null => {
+  const trimmed = address.trim();
+  if (!trimmed) return 'Vui lòng nhập địa chỉ.';
+
+  if (trimmed.length < 10) {
+    return 'Địa chỉ quá ngắn. Vui lòng nhập địa chỉ chi tiết hơn.';
+  }
+
+  return null;
+};
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -18,19 +78,112 @@ export default function Checkout() {
     address: '',
   });
 
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<Msg>(null);
 
+  // Address autocomplete
+  const [addressSuggestions, setAddressSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const addressInputRef = useRef<HTMLTextAreaElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
   const endpoint = import.meta.env.VITE_ORDER_ENDPOINT as string | undefined;
 
+  // Xử lý click outside để đóng suggestions
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node) &&
+        addressInputRef.current &&
+        !addressInputRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Real-time validation khi đã touched
+    if (touched[name]) {
+      validateField(name, value);
+    }
+
+    // Gợi ý địa chỉ
+    if (name === 'address') {
+      const suggestions = getAddressSuggestions(value);
+      setAddressSuggestions(suggestions);
+      setShowSuggestions(suggestions.length > 0);
+    }
+  };
+
+  const validateField = (name: string, value: string) => {
+    let error: string | null = null;
+
+    switch (name) {
+      case 'fullName':
+        error = validateFullName(value);
+        break;
+      case 'phone':
+        error = validatePhone(value);
+        break;
+      case 'address':
+        error = validateAddress(value);
+        break;
+    }
+
+    setFieldErrors((prev) => ({
+      ...prev,
+      [name]: error || undefined,
+    }));
+
+    return error;
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+    validateField(name, value);
+  };
+
+  const handleSelectSuggestion = (suggestion: string) => {
+    // Thêm suggestion vào cuối địa chỉ hiện tại hoặc thay thế
+    const currentAddress = formData.address.trim();
+    const newAddress = currentAddress ? `${currentAddress}, ${suggestion}` : suggestion;
+
+    setFormData((prev) => ({ ...prev, address: newAddress }));
+    setShowSuggestions(false);
+    setAddressSuggestions([]);
+
+    // Validate lại
+    if (touched.address) {
+      validateField('address', newAddress);
+    }
   };
 
   const validate = () => {
-    if (!formData.fullName.trim()) return 'Vui lòng nhập họ tên.';
-    if (!formData.phone.trim()) return 'Vui lòng nhập số điện thoại.';
-    if (!formData.address.trim()) return 'Vui lòng nhập địa chỉ.';
+    const nameError = validateFullName(formData.fullName);
+    const phoneError = validatePhone(formData.phone);
+    const addressError = validateAddress(formData.address);
+
+    setFieldErrors({
+      fullName: nameError || undefined,
+      phone: phoneError || undefined,
+      address: addressError || undefined,
+    });
+
+    setTouched({ fullName: true, phone: true, address: true });
+
+    if (nameError) return nameError;
+    if (phoneError) return phoneError;
+    if (addressError) return addressError;
     if (items.length === 0) return 'Giỏ hàng đang trống.';
     return null;
   };
@@ -163,7 +316,7 @@ export default function Checkout() {
           <form className="checkout-form" onSubmit={handleSubmit}>
             <h2>Thông tin khách hàng</h2>
 
-            <div className="form-group">
+            <div className={`form-group ${fieldErrors.fullName && touched.fullName ? 'has-error' : ''}`}>
               <label htmlFor="fullName">Họ tên *</label>
               <input
                 type="text"
@@ -171,11 +324,16 @@ export default function Checkout() {
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="VD: Nguyễn Văn A"
                 required
               />
+              {fieldErrors.fullName && touched.fullName && (
+                <span className="field-error">{fieldErrors.fullName}</span>
+              )}
             </div>
 
-            <div className="form-group">
+            <div className={`form-group ${fieldErrors.phone && touched.phone ? 'has-error' : ''}`}>
               <label htmlFor="phone">Số điện thoại *</label>
               <input
                 type="tel"
@@ -183,20 +341,49 @@ export default function Checkout() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                placeholder="VD: 0912345678"
                 required
               />
+              {fieldErrors.phone && touched.phone && (
+                <span className="field-error">{fieldErrors.phone}</span>
+              )}
             </div>
 
-            <div className="form-group">
+            <div className={`form-group ${fieldErrors.address && touched.address ? 'has-error' : ''}`}>
               <label htmlFor="address">Địa chỉ *</label>
-              <textarea
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                rows={3}
-                required
-              />
+              <div className="address-input-wrapper">
+                <textarea
+                  ref={addressInputRef}
+                  id="address"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  onFocus={() => {
+                    if (addressSuggestions.length > 0) setShowSuggestions(true);
+                  }}
+                  rows={3}
+                  placeholder="VD: 123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh"
+                  required
+                />
+                {showSuggestions && addressSuggestions.length > 0 && (
+                  <div className="address-suggestions" ref={suggestionsRef}>
+                    {addressSuggestions.map((suggestion, index) => (
+                      <div
+                        key={index}
+                        className="suggestion-item"
+                        onClick={() => handleSelectSuggestion(suggestion)}
+                      >
+                        {suggestion}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {fieldErrors.address && touched.address && (
+                <span className="field-error">{fieldErrors.address}</span>
+              )}
             </div>
 
             {message && <div className={`message message-${message.type}`}>{message.text}</div>}

@@ -2,12 +2,14 @@ import { useState, useCallback } from 'react';
 import { useCart } from '../context/CartContext';
 import { products } from '../data/products';
 import { formatCurrency } from '../lib/format';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import './ProductList.css';
 
 export default function ProductList() {
   const { addItem } = useCart();
   const [activeIndex, setActiveIndex] = useState(0);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  const { ref: sectionRef, isVisible } = useScrollAnimation<HTMLElement>();
 
   const handleAddToCart = (product: typeof products[0]) => {
     addItem({
@@ -51,7 +53,11 @@ export default function ProductList() {
   };
 
   return (
-    <section id="products" className="product-section">
+    <section
+      id="products"
+      className={`product-section fade-in-up ${isVisible ? 'visible' : ''}`}
+      ref={sectionRef}
+    >
       <div className="section-container">
         <h2 className="section-title">SẢN PHẨM</h2>
         <div className="product-carousel">
@@ -70,19 +76,23 @@ export default function ProductList() {
               return (
                 <div key={product.id} className={getPositionClass(index)}>
                   <div className="product-card-inner">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="product-image"
-                    />
-                    <h3 className="product-name">{product.name}</h3>
-                    <p className="product-price">{formatCurrency(product.price)}</p>
-                    <button
-                      className={`product-button ${isAdded ? 'added' : ''}`}
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      {isAdded ? '✓ Đã thêm' : 'Thêm vào giỏ hàng'}
-                    </button>
+                    <div className="product-image-wrapper">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="product-image"
+                      />
+                    </div>
+                    <div className="product-info">
+                      <h3 className="product-name">{product.name}</h3>
+                      <p className="product-price">{formatCurrency(product.price)}</p>
+                      <button
+                        className={`product-button btn-animated ${isAdded ? 'added' : ''}`}
+                        onClick={() => handleAddToCart(product)}
+                      >
+                        {isAdded ? '✓ Đã thêm' : 'Thêm vào giỏ hàng'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

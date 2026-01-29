@@ -1,4 +1,8 @@
-import singleCardImage from '../assets/images/single-card.png';
+import cardHoalo from '../assets/images/card-hoalo.png';
+import cardMaychem from '../assets/images/card-maychem.png';
+import cardCaybang from '../assets/images/card-caybang.png';
+import cardCongngam from '../assets/images/card-congngam.png';
+import cardXiengxich from '../assets/images/card-xiengxich.png';
 
 export interface Product {
   id: string;
@@ -10,38 +14,32 @@ export interface Product {
 export const products: Product[] = [
   {
     id: '1',
-    name: 'THU GỬI CON',
+    name: 'Thẻ bài Cổng Chính Nhà Tù Hoả Lò',
     price: 150000,
-    image: singleCardImage
+    image: cardHoalo
   },
   {
     id: '2',
-    name: 'EINSTEIN - Walter Isaacson',
-    price: 280000,
-    image: singleCardImage
+    name: 'Thẻ bài Máy Chém',
+    price: 150000,
+    image: cardMaychem
   },
   {
     id: '3',
-    name: 'Tìm lại căn cước',
-    price: 120000,
-    image: singleCardImage
+    name: 'Thẻ bài Cây Bàng Cổ Thụ',
+    price: 150000,
+    image: cardCaybang
   },
   {
     id: '4',
-    name: 'Lịch sử Việt Nam',
-    price: 200000,
-    image: singleCardImage
+    name: 'Thẻ bài Đường Cống Ngầm',
+    price: 150000,
+    image: cardCongngam
   },
   {
     id: '5',
-    name: 'Di tích văn hóa',
-    price: 180000,
-    image: singleCardImage
-  },
-  {
-    id: '6',
-    name: 'Cổ vật kể chuyện',
-    price: 250000,
-    image: singleCardImage
+    name: 'Thẻ bài Xiềng Xích',
+    price: 150000,
+    image: cardXiengxich
   }
 ];

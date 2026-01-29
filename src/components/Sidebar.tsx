@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { formatCurrency } from '../lib/format';
@@ -6,7 +6,9 @@ import './Sidebar.css';
 
 export default function Sidebar() {
   const [isVisible, setIsVisible] = useState(false);
+  const [cartBounce, setCartBounce] = useState(false);
   const { getTotalItems, getTotalPrice, items } = useCart();
+  const prevItemsCount = useRef(getTotalItems());
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +18,16 @@ export default function Sidebar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Cart bounce animation when items are added
+  useEffect(() => {
+    const currentCount = getTotalItems();
+    if (currentCount > prevItemsCount.current) {
+      setCartBounce(true);
+      setTimeout(() => setCartBounce(false), 500);
+    }
+    prevItemsCount.current = currentCount;
+  }, [getTotalItems]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -70,14 +82,16 @@ export default function Sidebar() {
 
       {/* Mini Cart Preview */}
       {totalItems > 0 && (
-        <div className="sidebar-section">
+        <div className={`sidebar-section ${cartBounce ? 'cart-bounce' : ''}`}>
           <h3 className="sidebar-title">Giỏ hàng</h3>
           <div className="sidebar-cart">
             <div className="cart-summary">
-              <span className="cart-items-count">{totalItems} sản phẩm</span>
+              <span className={`cart-items-count ${cartBounce ? 'add-success' : ''}`}>
+                {totalItems} sản phẩm
+              </span>
               <span className="cart-total">{formatCurrency(totalPrice)}</span>
             </div>
-            <Link to="/checkout" className="cart-checkout-btn">
+            <Link to="/checkout" className="cart-checkout-btn btn-animated">
               Xem giỏ hàng
             </Link>
           </div>

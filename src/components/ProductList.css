@@ -37,11 +37,11 @@
 .product-stage {
   position: relative;
   width: 100%;
-  height: 420px;
+  height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .product-card {
@@ -54,15 +54,59 @@
 }
 
 .product-card-inner {
-  background-color: white;
   border-radius: 16px;
-  padding: 1rem;
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   border: 2px solid rgba(0, 0, 0, 0.1);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
   height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Shine effect overlay */
+.product-card-inner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.product-card.center:hover .product-card-inner::before {
+  left: 100%;
+}
+
+.product-card.center:hover .product-card-inner {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(212, 168, 71, 0.3);
+  border-color: rgba(212, 168, 71, 0.5);
+}
+
+.product-image-wrapper {
+  background: linear-gradient(135deg, #e8d5a3 0%, #dcc68a 50%, #d4b86a 100%);
+  padding: 12px;
+  border-radius: 14px 14px 0 0;
+}
+
+.product-info {
+  background-color: white;
+  padding: 1rem;
+  border-radius: 0 0 14px 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card.center .product-card-inner {
@@ -114,10 +158,10 @@
 
 .product-image {
   width: 100%;
-  height: 250px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 1rem;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
 }
 
 .product-name {
@@ -137,19 +181,19 @@
   font-weight: bold;
   color: #e74c3c;
   margin-bottom: 1rem;
-  margin-top: auto;
 }
 
 .product-button {
   background-color: #2c2c2c;
   color: white;
   border: none;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all 0.3s ease;
-  width: 100%;
+  width: auto;
+  margin: auto auto 0 auto;
 }
 
 .product-button:hover {

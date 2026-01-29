@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { combos } from '../data/combos';
 import { formatCurrency } from '../lib/format';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import './ComboGrid.css';
 
 export default function ComboGrid() {
   const { addItem } = useCart();
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
+  const { ref: sectionRef, isVisible } = useScrollAnimation<HTMLElement>();
 
   const handleAddToCart = (combo: typeof combos[0]) => {
     addItem({
@@ -28,7 +30,11 @@ export default function ComboGrid() {
   };
 
   return (
-    <section id="combos" className="combo-section">
+    <section
+      id="combos"
+      className={`combo-section fade-in-up ${isVisible ? 'visible' : ''}`}
+      ref={sectionRef}
+    >
       <div className="section-container">
         <h2 className="section-title">COMBO</h2>
         <div className="combo-grid">
@@ -48,7 +54,7 @@ export default function ComboGrid() {
                 <div className="combo-footer">
                   <p className="combo-price">{formatCurrency(combo.price)}</p>
                   <button
-                    className={`combo-button ${isAdded ? 'added' : ''}`}
+                    className={`combo-button btn-animated ${isAdded ? 'added' : ''}`}
                     onClick={() => handleAddToCart(combo)}
                   >
                     {isAdded ? '✓ Đã thêm' : 'Thêm vào giỏ hàng'}
